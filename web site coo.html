@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Conception OO des SI · Chapitre 0</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F3F6FB;--card:#fff;--ink:#14243B;--mut:#5A6B85;--pri:#1F5FA8;--pri2:#DCE8F7;--acc:#E8712A;--ok:#1E8A55;--okb:#DDF3E7;--ko:#C23B3B;--kob:#FBE3E3;--line:#D5DFEE;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1726;--card:#16233A;--ink:#E6EEFA;--mut:#9DB0CC;--pri:#6FA8EE;--pri2:#1F3556;--acc:#F59A5B;--ok:#5FD39B;--okb:#173B2C;--ko:#F08080;--kob:#432426;--line:#2A3B58}}
+:root[data-theme="dark"]{--bg:#0E1726;--card:#16233A;--ink:#E6EEFA;--mut:#9DB0CC;--pri:#6FA8EE;--pri2:#1F3556;--acc:#F59A5B;--ok:#5FD39B;--okb:#173B2C;--ko:#F08080;--kob:#432426;--line:#2A3B58}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Plus Jakarta Sans",system-ui,sans-serif}
+header{background:var(--pri);color:#fff;padding:26px 20px 0}
+.wrap{max-width:860px;margin:0 auto}
+header h1{margin:0;font-size:clamp(24px,5vw,38px);line-height:1.15;font-weight:800}
+header p{margin:6px 0 18px;opacity:.85;font-size:14px}
+nav{display:flex;gap:4px}nav button{border:0;background:transparent;color:#fff;opacity:.75;font:700 15px inherit;font-family:inherit;padding:12px 20px;border-radius:10px 10px 0 0;cursor:pointer}
+nav button.on{background:var(--bg);color:var(--pri);opacity:1}
+main{padding:24px 20px 60px}
+section{display:none}section.on{display:block}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:12px}
+summary{cursor:pointer;padding:16px 18px;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:10px}
+summary::after{content:"+";color:var(--acc);font-size:22px;line-height:1}details[open] summary::after{content:"–"}
+.body{padding:0 18px 16px}.body p{margin:.5em 0}
+.def{border-left:4px solid var(--acc);background:var(--pri2);padding:10px 14px;border-radius:0 8px 8px 0;margin:10px 0}
+.tag{color:var(--acc);font-weight:700}
+.tri{display:flex;flex-direction:column;align-items:center;gap:4px;margin:14px 0}
+.tri div{padding:8px 14px;color:#fff;font-weight:700;font-size:14px;text-align:center;border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:14px}td,th{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}th{background:var(--pri2)}
+.tw{overflow-x:auto}
+.flow{display:grid;gap:8px;margin:12px 0}.flow div{border:2px solid var(--pri);border-radius:8px;padding:8px 12px;font-size:14px}
+button.p{background:var(--pri);color:#fff;border:0;border-radius:10px;padding:12px 22px;font:700 15px inherit;font-family:inherit;cursor:pointer}
+button.p:disabled{opacity:.4;cursor:not-allowed}button.s{background:var(--card);color:var(--pri);border:2px solid var(--pri);border-radius:10px;padding:10px 18px;font:700 14px inherit;font-family:inherit;cursor:pointer}
+button:focus-visible,summary:focus-visible,select:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.qc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+.bar{height:8px;background:var(--pri2);border-radius:8px;overflow:hidden;margin-bottom:14px}.bar i{display:block;height:100%;background:var(--acc);transition:width .3s}
+.kind{color:var(--mut);font-size:13px;font-weight:700;margin-bottom:6px}
+.q{font-size:18px;font-weight:700;margin:6px 0 16px}
+.opts{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.chip{border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:9px 18px;font:600 15px inherit;font-family:inherit;cursor:pointer}
+.chip.sel,.chip:hover{border-color:var(--pri);background:var(--pri2)}
+.blank{display:inline-block;min-width:110px;border-bottom:3px solid var(--acc);text-align:center;color:var(--pri);font-weight:800}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0}.row b{flex:1 1 200px}
+select{flex:1 1 220px;padding:10px;border-radius:8px;border:2px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:14px}
+ol.seq{padding-left:24px;min-height:40px}ol.seq li{font-weight:700;color:var(--pri)}
+.foot{display:flex;justify-content:space-between;margin-top:20px;gap:10px}
+.score{text-align:center;padding:10px 0 20px}.score .n{font-size:64px;font-weight:800;color:var(--acc);line-height:1}
+.rv{border-radius:12px;padding:14px 16px;margin:12px 0;border:1px solid var(--line);background:var(--card)}
+.rv.ko{border-left:6px solid var(--ko)}.rv.ok{border-left:6px solid var(--ok)}
+.rv .u{color:var(--ko)}.rv .g{color:var(--ok)}.rv .e{background:var(--pri2);padding:8px 12px;border-radius:8px;margin-top:8px;font-size:14px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<header><div class="wrap"><h1>Conception OO des systèmes d’information</h1><p>Polytechnique Sousse · Dr. Souha Bennani · Chapitre 0 : Les SI dans les organisations</p>
+<nav><button class="on" data-t="c">Cours</button><button data-t="q">Quiz (16 questions)</button></nav></div></header>
+<main><div class="wrap">
+<section id="c" class="on">
+<details open><summary>Objectifs et plan du cours</summary><div class="body">
+<p>Le cours vise à rendre l’étudiant apte à <b>analyser et concevoir</b> des SI dans une organisation, et à développer son <b>esprit critique</b> face aux pratiques courantes.</p>
+<p>À la fin, vous saurez : expliquer le concept de SI, comparer les cycles de développement, appliquer les principes d’analyse et conception, distinguer les approches de modélisation, utiliser des outils de modélisation et évaluer les méthodologies.</p>
+<div class="tw"><table><tr><th>Partie</th><th>Contenu</th></tr>
+<tr><td>I</td><td>Les SI dans les organisations (concept, typologies, défis)</td></tr>
+<tr><td>II</td><td>Le cycle de développement des SI</td></tr>
+<tr><td>III</td><td>Analyse et conception orientées-objet</td></tr>
+<tr><td>IV</td><td>La notation UML (cas d’utilisation, classes, séquence, états, activités, IHM)</td></tr></table></div></div></details>
+
+<details><summary>1. L’entreprise et son environnement</summary><div class="body">
+<p>Une entreprise échange en permanence des <b>flux</b> (biens, argent, documents) avec des <b>acteurs externes</b> : clients, fournisseurs, banques… À l’intérieur, elle est divisée en domaines (service commercial, service comptable) qui s’échangent aussi des flux.</p>
+<div class="def"><b>Exemple :</b> le client envoie une <i>demande d’information</i> au service commercial, qui répond par une <i>documentation</i>. Les <i>ventes</i> passent au service comptable, qui reçoit une <i>facture</i> du fournisseur et envoie un <i>règlement</i>.</div>
+<p><b>Degrés d’invariance :</b> ce qui change peu et ce qui change vite guide la conception.</p>
+<div class="tw"><table><tr><th>Stabilité</th><th>Éléments</th></tr>
+<tr><td>Stable</td><td>Processus liant l’entreprise à ses acteurs externes ; données</td></tr>
+<tr><td>Moins stable</td><td>Traitements</td></tr>
+<tr><td>Peu stable</td><td>Techniques, nature de la demande, besoins en statistiques, organisation</td></tr></table></div>
+<p><span class="tag">À retenir :</span> on modélise d’abord ce qui est stable (les données) pour que le SI dure.</p></div></details>
+
+<details><summary>2. Donnée, information, connaissance</summary><div class="body">
+<div class="tri"><div style="background:#E8712A;width:120px">Connaissance</div><div style="background:#1F5FA8;width:220px">Information</div><div style="background:#B8860B;width:320px">Données</div></div>
+<div class="def"><b>Donnée :</b> description élémentaire d’une réalité. Elle n’a pas de signification en soi.<br><b>Information :</b> ensemble de données qui prennent un sens pour un utilisateur, selon le contexte. Une même donnée peut avoir des sens différents.<br><b>Connaissance :</b> résultat de l’appropriation et de l’interprétation des informations. Elle devient une ressource pour l’organisation si elle est exploitable, disponible et interprétée.</div>
+<p><b>Exemple du cours :</b> « 12°C » est une donnée. « Il fait 12°C dans la pièce, il fait frais » est une information. « Pour avoir plus chaud, il faut augmenter le chauffage » est une connaissance.</p>
+<p><b>À quoi sert l’information ?</b> Elle est un support pour l’action, elle garde une trace des activités, elle aide à la décision. Les technologies de l’information et de la communication assurent la mémorisation, le traitement automatique et la diffusion.</p></div></details>
+
+<details><summary>3. Le système entreprise : trois sous-systèmes</summary><div class="body">
+<div class="flow"><div><b>Système de décision</b> (pilotage / management) : fixe les objectifs, analyse l’environnement et le fonctionnement interne, contrôle et régule.</div>
+<div><b>Système d’information</b> : reçoit les entrées d’informations, mémorise les décisions, remonte les informations aux décideurs, produit les sorties d’informations.</div>
+<div><b>Système opérant</b> (opératoire / de production) : réalise la production physique des biens et services, contrôlé par le système de décision, relié à l’environnement par des flux physiques.</div></div>
+<p>Le SI est donc le <b>lien</b> : les décisions descendent vers le système opérant, les informations de production remontent vers le système de décision.</p></div></details>
+
+<details><summary>4. Le concept de système d’information</summary><div class="body">
+<div class="def"><b>Définition :</b> un SI est un <span class="tag">ensemble organisé de ressources</span> (matériel, logiciel, personnel, données, procédures…) permettant d’<span class="tag">acquérir, stocker, traiter et communiquer</span> des informations de toutes formes dans une organisation.</div>
+<p><b>Les 4 fonctions :</b> <b>collecter</b> (saisie), <b>stocker</b>, <b>traiter</b> (produire de nouvelles informations : organisation, mise à jour, calcul) et <b>diffuser</b> (circulation entre les acteurs).</p>
+<p><b>Les composants :</b> matériel et réseaux (serveurs, postes, imprimantes), logiciels (messagerie, intranet, applications métiers CRM/SCM), données (flux opérationnels, synthèses ventes, coûts, rentabilité), processus (qui fait quoi, comment, quand) et personnes (internes, partenaires, clients, sous-traitants).</p>
+<p><b>Statique et dynamique :</b> côté statique, les <i>données</i>. Côté dynamique, les <i>événements</i> que les données génèrent, qui <i>déclenchent</i> des <i>actions</i>, lesquelles <i>modifient</i> les données.</p></div></details>
+
+<details><summary>5. SI ou système informatique ?</summary><div class="body">
+<div class="tw"><table><tr><th></th><th>Système d’information</th><th>Système informatique</th></tr>
+<tr><td>Contient</td><td>Acteurs, informations, processus</td><td>Matériels, logiciels, applicatifs et base de données</td></tr>
+<tr><td>Rôle</td><td>Organise l’information de l’organisation</td><td>Outille le SI</td></tr></table></div>
+<p>Le SI <b>s’appuie sur</b> le système informatique, et le système informatique <b>permet</b> au SI de fonctionner. Ce n’est pas la même chose : on peut avoir un SI sans informatique.</p>
+<div class="def"><b>Vision objet :</b> un SI = un ensemble d’objets qui collaborent entre eux. Un objet a des frontières précises, une identité, des attributs (son état) et des méthodes (son comportement). C’est la base des chapitres suivants.</div></div></details>
+
+<details><summary>6. Typologies et défis</summary><div class="body">
+<p><b>SI supports de gestion :</b> fournissent l’information aux décideurs pour les assister dans leurs décisions.</p>
+<p><b>SI supports d’opérations :</b> assistent les opérations quotidiennes : traitement des transactions (ventes, achats, règlements, encaissements), contrôle des processus industriels, opérations de bureau et de communication (messagerie, collecticiels).</p>
+<div class="def"><b>Défi :</b> concevoir un SI à un instant T ne suffit plus. L’enjeu principal est de pouvoir le <b>faire évoluer et le rationaliser</b> selon l’apparition de nouveaux besoins, contraintes et innovations. C’est ce qui motive le cycle de développement (Chapitre 1).</div></div></details>
+<p style="text-align:center"><button class="p" onclick="go('q')">Passer au quiz</button></p>
+</section>
+
+<section id="q"><div id="qa"></div></section>
+</div></main>
+<script>
+const Q=[
+{t:"tf",q:`Une donnée a une signification en soi.`,a:false,e:`Faux. Une donnée est une description élémentaire d’une réalité, sans signification en soi. C’est l’information qui donne du sens, selon le contexte.`},
+{t:"tf",q:`Une même donnée peut avoir des sens différents selon le contexte.`,a:true,e:`Vrai. C’est ce qui distingue l’information de la donnée : le sens dépend de l’utilisateur et du contexte.`},
+{t:"tf",q:`Le système opérant réalise la production physique des biens et des services.`,a:true,e:`Vrai. On l’appelle aussi système opératoire ou système de production.`},
+{t:"tf",q:`Système d’information et système informatique désignent la même chose.`,a:false,e:`Faux. Le SI regroupe acteurs, informations et processus. Le système informatique regroupe matériels, logiciels et bases de données. Le SI s’appuie sur le système informatique.`},
+{t:"tf",q:`Dans l’entreprise, les données sont plus stables que les techniques.`,a:true,e:`Vrai. Les données et les processus avec les acteurs externes sont stables. Les techniques sont peu stables.`},
+{t:"tf",q:`Concevoir un SI à un instant T suffit pour répondre aux besoins d’une organisation.`,a:false,e:`Faux. L’enjeu principal est de pouvoir le faire évoluer et le rationaliser selon les nouveaux besoins, contraintes et innovations.`},
+{t:"fill",q:`Le SI est un ensemble organisé de ___ permettant d’acquérir, stocker, traiter et communiquer des informations.`,o:["ressources","bénéfices","clients","décisions"],a:"ressources",e:`La définition parle d’un ensemble organisé de ressources : matériel, logiciel, personnel, données, procédures.`},
+{t:"fill",q:`Le système de ___ finalise l’entreprise en lui assignant ses objectifs.`,o:["décision","production","information","opérant"],a:"décision",e:`Le système de décision (ou de pilotage / management) fixe les objectifs. Le système opérant produit, le SI relie les deux.`},
+{t:"fill",q:`Un SI est un ensemble d’___ qui collaborent entre eux.`,o:["objets","serveurs","utilisateurs","tables"],a:"objets",e:`C’est la vision objet : chaque objet a des frontières, une identité, des attributs et des méthodes.`},
+{t:"fill",q:`Les SI supports de ___ fournissent l’information aux décideurs pour les aider à décider.`,o:["gestion","opérations","production","réseau"],a:"gestion",e:`Support de gestion = aide aux décideurs. Support d’opérations = traitement des opérations quotidiennes.`},
+{t:"fill",q:`La ___ est le résultat de l’appropriation et de l’interprétation des informations.`,o:["connaissance","donnée","transaction","statistique"],a:"connaissance",e:`Donnée → information → connaissance. La connaissance devient une ressource pour l’organisation.`},
+{t:"match",q:`Puzzle : associez chaque niveau à son exemple.`,p:[["Donnée","12°C"],["Information","Il fait 12°C dans la pièce, il fait frais"],["Connaissance","Pour avoir plus chaud, il faut augmenter le chauffage"]],e:`12°C seul n’a pas de sens (donnée). Avec le contexte, il devient information. L’interprétation qui mène à une action est la connaissance.`},
+{t:"match",q:`Puzzle : associez chaque composant du SI à son exemple.`,p:[["Matériel","Serveurs, postes de travail, imprimantes"],["Logiciels","Messagerie, intranet, CRM, SCM"],["Processus","Qui fait quoi, comment, quand"],["Personnes","Clients, partenaires, sous-traitants"]],e:`Les 5 composants sont : matériel/réseaux, logiciels, données, processus, personnes.`},
+{t:"match",q:`Puzzle : associez chaque sous-système de l’entreprise à son rôle.`,p:[["Système de décision","Fixe les objectifs et régule"],["Système opérant","Produit les biens et services"],["Système d’information","Relie décision et production par des flux d’information"]],e:`Le SI fait circuler les décisions vers le système opérant et remonte les informations de production vers le système de décision.`},
+{t:"order",q:`Puzzle : remettez dans l’ordre les 4 fonctions du SI.`,i:["Collecter","Stocker","Traiter","Diffuser"],e:`On collecte (saisie), on stocke, on traite (nouvelles informations), puis on diffuse aux acteurs.`},
+{t:"order",q:`Puzzle : classez du plus stable au moins stable.`,i:["Données et processus avec l’extérieur","Traitements","Techniques et organisation"],e:`Ce qui est stable : données et processus externes. Moins stable : traitements. Peu stable : techniques, demande, statistiques, organisation.`}
+];
+const K={tf:"Vrai ou faux",fill:"Compléter le mot",match:"Puzzle : associer",order:"Puzzle : remettre dans l’ordre"};
+const sh=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+let i,A,done;
+const $=id=>document.getElementById(id);
+function go(t){document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id===t));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));window.scrollTo(0,0)}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.t));
+function start(){i=0;A=Q.map(q=>q.t==="match"?[]:q.t==="order"?[]:null);Q.forEach(q=>{q.s=q.t==="fill"?sh(q.o):q.t==="match"?sh(q.p.map(x=>x[1])):q.t==="order"?sh(q.i):0});show()}
+const ok=(q,k)=>{const a=A[k];return q.t==="tf"||q.t==="fill"?a===(q.t==="tf"?q.a:q.a):q.t==="match"?q.p.every((p,j)=>a[j]===p[1]):a.join("|")===q.i.join("|")};
+const ans=k=>{const q=Q[k],a=A[k];return a===null||(Array.isArray(a)&&!a.length)?"(sans réponse)":q.t==="tf"?(a?"Vrai":"Faux"):q.t==="fill"?a:q.t==="match"?q.p.map((p,j)=>p[0]+" → "+(a[j]||"?")).join("<br>"):a.join(" → ")};
+const cor=k=>{const q=Q[k];return q.t==="tf"?(q.a?"Vrai":"Faux"):q.t==="fill"?q.a:q.t==="match"?q.p.map(p=>p[0]+" → "+p[1]).join("<br>"):q.i.join(" → ")};
+const ready=k=>{const q=Q[k],a=A[k];return q.t==="match"?q.p.every((_,j)=>a[j]):q.t==="order"?a.length===q.i.length:a!==null};
+function show(){const q=Q[i];let h=`<div class="bar"><i style="width:${i/Q.length*100}%"></i></div><div class="qc"><div class="kind">Question ${i+1} sur ${Q.length} · ${K[q.t]}</div>`;
+if(q.t==="tf")h+=`<div class="q">${q.q}</div><div class="opts">${[true,false].map(v=>`<button class="chip ${A[i]===v?"sel":""}" data-v="${v}">${v?"Vrai":"Faux"}</button>`).join("")}</div>`;
+if(q.t==="fill"){h+=`<div class="kind">Choisissez le mot qui manque :</div><div class="opts">${q.s.map(o=>`<button class="chip ${A[i]===o?"sel":""}" data-v="${o}">${o}</button>`).join("")}</div><div class="q">${q.q.replace("___",`<span class="blank">${A[i]||"&nbsp;"}</span>`)}</div>`}
+if(q.t==="match")h+=`<div class="q">${q.q}</div>`+q.p.map((p,j)=>`<div class="row"><b>${p[0]}</b><select data-j="${j}"><option value="">Choisir…</option>${q.s.map(o=>`<option ${A[i][j]===o?"selected":""}>${o}</option>`).join("")}</select></div>`).join("");
+if(q.t==="order")h+=`<div class="q">${q.q}</div><div class="kind">Cliquez dans l’ordre :</div><ol class="seq">${A[i].map(x=>`<li>${x}</li>`).join("")}</ol><div class="opts">${q.s.filter(x=>!A[i].includes(x)).map(x=>`<button class="chip" data-o="${x}">${x}</button>`).join("")}</div>${A[i].length?`<button class="s" id="rs">Recommencer</button>`:""}`;
+h+=`<div class="foot"><button class="s" id="pv" ${i?"":"disabled"}>Précédent</button><button class="p" id="nx" ${ready(i)?"":"disabled"}>${i===Q.length-1?"Voir mon résultat":"Suivant"}</button></div></div>`;
+$("qa").innerHTML=h;
+$("qa").querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{const v=b.dataset.v;A[i]=q.t==="tf"?v==="true":v;show()});
+$("qa").querySelectorAll("select").forEach(s=>s.onchange=()=>{A[i][+s.dataset.j]=s.value;show()});
+$("qa").querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{A[i].push(b.dataset.o);show()});
+if($("rs"))$("rs").onclick=()=>{A[i]=[];show()};
+$("pv").onclick=()=>{i--;show()};$("nx").onclick=()=>{if(i<Q.length-1){i++;show()}else result()};window.scrollTo(0,0)}
+function result(){const r=Q.map((q,k)=>ok(q,k)),n=r.filter(Boolean).length,note=(n/Q.length*20).toFixed(1).replace(".0","");
+const msg=n>=14?"Excellent, vous maîtrisez le chapitre.":n>=10?"Bien, relisez les points ci-dessous.":"Relisez le cours puis réessayez.";
+let h=`<div class="qc"><div class="score"><div class="n">${note}<span style="font-size:26px">/20</span></div><p><b>${n} bonnes réponses sur ${Q.length}.</b> ${msg}</p></div>`;
+const bad=r.map((v,k)=>v?-1:k).filter(k=>k>=0);
+h+=bad.length?`<h3>Vos erreurs (${bad.length})</h3>`+bad.map(k=>`<div class="rv ko"><b>${k+1}. ${Q[k].q.replace("___","…")}</b><p class="u">Votre réponse :<br>${ans(k)}</p><p class="g">Bonne réponse :<br>${cor(k)}</p><div class="e">${Q[k].e}</div></div>`).join(""):`<div class="rv ok"><b>Aucune erreur, bravo.</b></div>`;
+h+=`<div class="foot"><button class="s" onclick="go('c')">Revoir le cours</button><button class="p" onclick="start()">Refaire le quiz</button></div></div>`;
+$("qa").innerHTML=h;window.scrollTo(0,0)}
+start();
+</script></body></html>
